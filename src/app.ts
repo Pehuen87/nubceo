@@ -3,8 +3,9 @@ import express from "express";
 import { authenticateToken, generateAccessToken, authenticateRefreshToken, generateRefreshToken } from './auth'; // Functions for JWT authentication
 import { Actor, IActor } from "./models/actor";
 import { Director, IDirector } from "./models/director";
-import { Movie, IMovie} from "./models/movie";
+import { Movie, IMovie } from "./models/movie";
 import { TVShow, ITVShow } from "./models/tvshow";
+import * as mock from './helpers/mock';
 
 // Create an instance of Express.js
 const app = express();
@@ -13,66 +14,11 @@ const app = express();
 app.use(express.json());
 
 
-// Define sample data
-const actor1 = new Actor({
-    name: 'Name1',
-    surname: 'Surname1',
-    bio: 'This is a bio1',
-    avatar: 'http://google.com/img1.jpg',
-    movies: [],
-    tvShowEpisodes: []
-});
-
-const actor2 = new Actor({
-    name: 'Name2',
-    surname: 'Surname2',
-    bio: 'This is a bio2',
-    avatar: 'http://google.com/img2.jpg',
-    movies: [],
-    tvShowEpisodes: []
-});
-
-const director1 = new Director({
-    name: 'Name1',
-    surname: 'Surname1',
-    bio: 'This is a bio1',
-    avatar: 'http://google.com/img1.jpg',
-    movies: [],
-    tvShowEpisodes: []
-});
-
-const director2 = new Director({
-    name: 'Name2',
-    surname: 'Surname2',
-    bio: 'This is a bio2',
-    avatar: 'http://google.com/img2.jpg',
-    movies: [],
-    tvShowEpisodes: []
-});
-
-
-const tvShows =  new TVShow({
-    title: 'TV Show 1',
-    genre: 'Drama',
-    seasons: 3,
-    episodes: [
-      { id: '1', title: 'Episode 1', director: 'Director 1', season: 1 },
-      { id: '2', title: 'Episode 2', director: 'Director 3', season: 2},
-    ],
-    actors: ['Actor 1', 'Actor 3'],
-});
-
-const actors: IActor[] = [
-  { id: '1', name: 'Actor 1', movies: ['Movie 1'], tvShows: ['TV Show 1'] },
-  { id: '2', name: 'Actor 2', movies: ['Movie 1'], tvShows: [] },
-  { id: '3', name: 'Actor 3', movies: [], tvShows: ['TV Show 1'] },
-];
-
-const directors: IDirector[] = [
-  { id: '1', name: 'Director 1', movies: ['Movie 1'], tvShowEpisodes: ['Episode 1'] },
-  { id: '2', name: 'Director 2', movies: ['Movie 2'], tvShowEpisodes: [] },
-  { id: '3', name: 'Director 3', movies: [], tvShowEpisodes: ['Episode 2'] },
-];
+// Define sample data with mock 
+const movies = mock.generateMovies(5);
+const tvShows = mock.generateTVShows(4);
+const directors = mock.generateDirectors(3);
+const actors = mock.generateActors(3);
 
 // Define API endpoints
 
@@ -102,7 +48,7 @@ app.get('/movies', authenticateToken, (req: express.Request, res: express.Respon
   // Get query parameters for filtering and sorting
   const genre = req.query.genre as string;
   const sortBy = req.query.sortBy as string;
-  
+
 
   let filteredMovies = [...movies];
 
@@ -112,10 +58,8 @@ app.get('/movies', authenticateToken, (req: express.Request, res: express.Respon
   }
 
   // Sort movies by the specified field if provided
-  if (!isNaN(parseInt(sortBy))) {
-    const sortByNumber = parseInt(sortBy); 
-    filteredMovies.sort((a, b) => a[sortByNumber].localeCompare(b[sortByNumber]));
-  }
+  filteredMovies.sort((a, b) => a[sortBy].localeCompare(b[sortBy]));
+
 
   res.json(filteredMovies);
 });

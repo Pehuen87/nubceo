@@ -1,4 +1,27 @@
 "use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -6,40 +29,16 @@ Object.defineProperty(exports, "__esModule", { value: true });
 // Import necessary modules and dependencies
 const express_1 = __importDefault(require("express"));
 const auth_1 = require("./auth"); // Functions for JWT authentication
+const mock = __importStar(require("./helpers/mock"));
 // Create an instance of Express.js
 const app = (0, express_1.default)();
 // Define middleware for parsing JSON data
 app.use(express_1.default.json());
-// Define JWT secret key (should be stored securely)
-const JWT_SECRET = 'your-secret-key';
-// Define sample data
-const movies = [
-    { id: '1', title: 'Movie 1', genre: 'Action', director: 'Director 1', actors: ['Actor 1', 'Actor 2'] },
-    { id: '2', title: 'Movie 2', genre: 'Comedy', director: 'Director 2', actors: ['Actor 3', 'Actor 4'] },
-];
-const tvShows = [
-    {
-        id: '1',
-        title: 'TV Show 1',
-        genre: 'Drama',
-        seasons: 3,
-        episodes: [
-            { id: '1', title: 'Episode 1', director: 'Director 1', season: 1 },
-            { id: '2', title: 'Episode 2', director: 'Director 3', season: 2 },
-        ],
-        actors: ['Actor 1', 'Actor 3'],
-    },
-];
-const actors = [
-    { id: '1', name: 'Actor 1', movies: ['Movie 1'], tvShows: ['TV Show 1'] },
-    { id: '2', name: 'Actor 2', movies: ['Movie 1'], tvShows: [] },
-    { id: '3', name: 'Actor 3', movies: [], tvShows: ['TV Show 1'] },
-];
-const directors = [
-    { id: '1', name: 'Director 1', movies: ['Movie 1'], tvShowEpisodes: ['Episode 1'] },
-    { id: '2', name: 'Director 2', movies: ['Movie 2'], tvShowEpisodes: [] },
-    { id: '3', name: 'Director 3', movies: [], tvShowEpisodes: ['Episode 2'] },
-];
+// Define sample data with mock 
+const movies = mock.generateMovies(5);
+const tvShows = mock.generateTVShows(4);
+const directors = mock.generateDirectors(3);
+const actors = mock.generateActors(3);
 // Define API endpoints
 // Authentication using JWT
 app.post('/auth/login', (req, res) => {
@@ -60,16 +59,15 @@ app.post('/auth/token', auth_1.authenticateRefreshToken, (req, res) => {
 // Retrieve movies with filtering and sorting
 app.get('/movies', auth_1.authenticateToken, (req, res) => {
     // Get query parameters for filtering and sorting
-    const { genre, sortBy } = req.query;
+    const genre = req.query.genre;
+    const sortBy = req.query.sortBy;
     let filteredMovies = [...movies];
     // Filter movies by genre if provided
     if (genre) {
-        filteredMovies = filteredMovies.filter((movie) => movie.genre.toLowerCase() === genre.toString().toLowerCase());
+        filteredMovies = filteredMovies.filter((movie) => movie.genre.toLowerCase() === genre.toLowerCase());
     }
     // Sort movies by the specified field if provided
-    if (sortBy) {
-        filteredMovies.sort((a, b) => a[sortBy].localeCompare(b[sortBy]));
-    }
+    filteredMovies.sort((a, b) => a[sortBy].localeCompare(b[sortBy]));
     res.json(filteredMovies);
 });
 // Retrieve information of a specific TV show episode
