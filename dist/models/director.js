@@ -10,5 +10,13 @@ const directorSchema = new mongoose_1.Schema({
     movies: [{ type: mongoose_1.Schema.Types.ObjectId, ref: 'Movie' }],
     tvShowEpisodes: [{ type: mongoose_1.Schema.Types.ObjectId, ref: 'TVShow' }],
 });
+// Define a virtual property "id" based on the "_id" field
+directorSchema.virtual('id').get(function () {
+    return this._id.toHexString();
+});
+// Ensure virtual fields are serialized when converting to JSON
+directorSchema.set('toJSON', {
+    virtuals: true,
+});
 exports.Director = (0, mongoose_1.model)('Director', directorSchema);
 //# sourceMappingURL=director.js.map

@@ -3,68 +3,62 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.generateActors = exports.generateActor = exports.generateDirectors = exports.generateDirector = exports.generateMovies = exports.generateMovie = exports.generateTVShows = exports.generateTVShow = exports.generateEpisodes = exports.generateEpisode = void 0;
+exports.generateDB = void 0;
 const faker_1 = __importDefault(require("faker"));
-const tvshow_1 = require("../models/tvshow");
-const director_1 = require("../models/director");
-const actor_1 = require("../models/actor");
-const movie_1 = require("../models/movie");
+const directorModel_1 = require("../models/directorModel");
+const actorModel_1 = require("../models/actorModel");
+const movieModel_1 = require("../models/movieModel");
+const tvShowModel_1 = require("../models/tvShowModel");
 // Generate a mock episode
 const generateEpisode = () => ({
-    id: faker_1.default.datatype.uuid(),
+    episodeId: faker_1.default.datatype.uuid(),
     title: faker_1.default.lorem.words(3),
-    director: (0, exports.generateDirector)(),
+    director: generateDirector(),
     season: faker_1.default.datatype.number({ min: 1, max: 10 }),
 });
-exports.generateEpisode = generateEpisode;
 // Generate an array of mock episodes
 const generateEpisodes = (count) => {
     const episodes = [];
     for (let i = 0; i < count; i++) {
-        episodes.push((0, exports.generateEpisode)());
+        episodes.push(generateEpisode());
     }
     return episodes;
 };
-exports.generateEpisodes = generateEpisodes;
 // Generate a mock TV show
-const generateTVShow = () => new tvshow_1.TVShow({
+const generateTVShow = () => new tvShowModel_1.TVShow({
     title: faker_1.default.lorem.words(3),
     genre: faker_1.default.random.word(),
     seasons: faker_1.default.datatype.number({ min: 1, max: 10 }),
     plot: faker_1.default.lorem.paragraph(),
-    episodes: (0, exports.generateEpisodes)(faker_1.default.datatype.number({ min: 1, max: 20 })),
-    actors: [(0, exports.generateActors)(4)],
+    episodes: generateEpisodes(faker_1.default.datatype.number({ min: 1, max: 20 })),
+    actors: [generateActors(4)],
 });
-exports.generateTVShow = generateTVShow;
 // Generate an array of mock TV shows
 const generateTVShows = (count) => {
     const tvShows = [];
     for (let i = 0; i < count; i++) {
-        tvShows.push((0, exports.generateTVShow)());
+        tvShows.push(generateTVShow());
     }
     return tvShows;
 };
-exports.generateTVShows = generateTVShows;
 // Generate a mock Movie
-const generateMovie = () => new movie_1.Movie({
+const generateMovie = () => new movieModel_1.Movie({
     title: faker_1.default.lorem.words(3),
     genre: faker_1.default.random.word(),
-    director: (0, exports.generateDirector)(),
+    director: generateDirector(),
     plot: faker_1.default.lorem.paragraph(),
-    actors: [(0, exports.generateActors)(4)],
+    actors: [generateActors(4)],
 });
-exports.generateMovie = generateMovie;
 // Generate an array of mock movies
 const generateMovies = (count) => {
     const movies = [];
     for (let i = 0; i < count; i++) {
-        movies.push((0, exports.generateMovie)());
+        movies.push(generateMovie());
     }
     return movies;
 };
-exports.generateMovies = generateMovies;
 // Generate a mock Director
-const generateDirector = () => new director_1.Director({
+const generateDirector = () => new directorModel_1.Director({
     name: faker_1.default.name.firstName(),
     surname: faker_1.default.name.lastName(),
     bio: faker_1.default.lorem.paragraph(),
@@ -72,18 +66,16 @@ const generateDirector = () => new director_1.Director({
     movies: [],
     tvShowEpisodes: [],
 });
-exports.generateDirector = generateDirector;
 // Generate an array of mock directors
 const generateDirectors = (count) => {
     const directors = [];
     for (let i = 0; i < count; i++) {
-        directors.push((0, exports.generateDirector)()._id);
+        directors.push(generateDirector());
     }
     return directors;
 };
-exports.generateDirectors = generateDirectors;
 // Generate a mock Actor
-const generateActor = () => new actor_1.Actor({
+const generateActor = () => new actorModel_1.Actor({
     name: faker_1.default.name.firstName(),
     surname: faker_1.default.name.lastName(),
     bio: faker_1.default.lorem.paragraph(),
@@ -91,23 +83,57 @@ const generateActor = () => new actor_1.Actor({
     movies: [],
     tvShowEpisodes: [],
 });
-exports.generateActor = generateActor;
 // Generate an array of mock actors
 const generateActors = (count) => {
     const actors = [];
     for (let i = 0; i < count; i++) {
-        actors.push((0, exports.generateActor)());
+        actors.push(generateActor());
     }
     return actors;
 };
-exports.generateActors = generateActors;
+const getRandomsActors = (arr) => {
+    let len = arr.length, n = faker_1.default.datatype.number({ min: 1, max: len });
+    const result = new Array(n), taken = new Array(len);
+    while (n--) {
+        const x = faker_1.default.datatype.number({ min: 0, max: len - 1 });
+        result[n] = arr[x in taken ? taken[x] : x];
+        taken[x] = --len in taken ? taken[len] : len;
+    }
+    return result;
+};
+const pickActorsAndDirector = (db) => {
+    db.movies.forEach(movie => {
+        const selectedActors = getRandomsActors(db.actors);
+        const selectedDirector = db.directors[faker_1.default.datatype.number({ min: 0, max: db.directors.length - 1 })];
+        selectedActors.forEach(actor => {
+            actor.movies.push(movie._id);
+        });
+        selectedDirector.movies.push(movie._id);
+        movie.actors = selectedActors.map(a => a._id);
+        movie.director = selectedDirector._id;
+    });
+    db.tvshows.forEach(tvshow => {
+        const selectedActors = getRandomsActors(db.actors);
+        selectedActors.forEach(actor => {
+            actor.tvShowEpisodes.push(tvshow._id);
+        });
+        tvshow.actors = selectedActors.map(a => a._id);
+        tvshow.episodes.forEach(episode => {
+            const selectedDirector = db.directors[faker_1.default.datatype.number({ min: 0, max: db.directors.length - 1 })];
+            episode.director = selectedDirector._id;
+            selectedDirector.tvShowEpisodes.push(tvshow._id);
+        });
+    });
+};
 const generateDB = () => {
     const mockDB = {
-        movies: (0, exports.generateMovies)(faker_1.default.datatype.number({ min: 1, max: 10 })),
-        tvshows: (0, exports.generateTVShows)(faker_1.default.datatype.number({ min: 1, max: 10 })),
-        actors: (0, exports.generateActors)(faker_1.default.datatype.number({ min: 1, max: 10 })),
-        directors: (0, exports.generateDirectors)(faker_1.default.datatype.number({ min: 1, max: 10 }))
+        movies: generateMovies(faker_1.default.datatype.number({ min: 3, max: 20 })),
+        tvshows: generateTVShows(faker_1.default.datatype.number({ min: 3, max: 20 })),
+        actors: generateActors(faker_1.default.datatype.number({ min: 3, max: 20 })),
+        directors: generateDirectors(faker_1.default.datatype.number({ min: 3, max: 20 }))
     };
+    pickActorsAndDirector(mockDB);
     return mockDB;
 };
+exports.generateDB = generateDB;
 //# sourceMappingURL=mock.js.map

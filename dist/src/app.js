@@ -28,14 +28,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 // Import necessary modules and dependencies
 const express_1 = __importDefault(require("express"));
-require("dotenv/config");
-const auth_1 = require("./middlewares/auth"); // Functions for JWT authentication
-const mock = __importStar(require("./helpers/mock"));
-const db_1 = require("./config/db");
+const auth_1 = require("./auth"); // Functions for JWT authentication
+const mock = __importStar(require("../helpers/mock"));
 // Create an instance of Express.js
 const app = (0, express_1.default)();
-// Connect to MongoDB
-(0, db_1.connectToDatabase)();
 // Define middleware for parsing JSON data
 app.use(express_1.default.json());
 // Define sample data with mock 
@@ -88,9 +84,6 @@ app.get('/actors', auth_1.authenticateToken, (req, res) => {
 app.get('/directors', auth_1.authenticateToken, (req, res) => {
     res.json(db.directors);
 });
-app.get('/tvshows', auth_1.authenticateToken, (req, res) => {
-    res.json(db.tvshows);
-});
 // Retrieve information of a specific TV show episode
 app.get('/tvshows/:id/episodes/:episodeId', auth_1.authenticateToken, (req, res) => {
     const { id, episodeId } = req.params;
@@ -100,7 +93,7 @@ app.get('/tvshows/:id/episodes/:episodeId', auth_1.authenticateToken, (req, res)
         return res.status(404).json({ error: 'TV show not found' });
     }
     // Find the episode by ID
-    const episode = tvShow.episodes.find((ep) => ep.episodeId === episodeId);
+    const episode = tvShow.episodes.find((ep) => ep.id === episodeId);
     if (!episode) {
         return res.status(404).json({ error: 'Episode not found' });
     }
@@ -112,16 +105,6 @@ app.get('/tvshows/:id/episodes/:episodeId', auth_1.authenticateToken, (req, res)
     const episodeWithDirector = Object.assign(Object.assign({}, episode), { director: director.name });
     res.json(episodeWithDirector);
 });
-// Retrieve information of a specific TV show episode
-app.get('/tvshows/:id/episodes/', auth_1.authenticateToken, (req, res) => {
-    const { id } = req.params;
-    // Find the TV show by ID
-    const tvShow = db.tvshows.find((show) => show.id === id);
-    if (!tvShow) {
-        return res.status(404).json({ error: 'TV show not found' });
-    }
-    res.json(tvShow.episodes);
-});
 // Add a new object (e.g., movie, TV show, actor, director)
 app.post('/objects', auth_1.authenticateToken, (req, res) => {
     const { type, object } = req.body;
@@ -129,7 +112,7 @@ app.post('/objects', auth_1.authenticateToken, (req, res) => {
     res.json({ success: true });
 });
 // Start the server
-app.listen(process.env.PORT || 3000, () => {
-    console.log(`Server is running on port ${process.env.PORT || 3000}`);
+app.listen(3000, () => {
+    console.log('Server is running on port 3000');
 });
 //# sourceMappingURL=app.js.map

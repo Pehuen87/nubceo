@@ -23,4 +23,4 @@ tvShowSchema.set('toJSON', {
     virtuals: true,
 });
 exports.TVShow = (0, mongoose_1.model)('TVShow', tvShowSchema);
-//# sourceMappingURL=tvshow.js.map
+//# sourceMappingURL=tvSasdhowModel.js.map

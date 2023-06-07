@@ -1,7 +1,8 @@
 import { Schema, model, Types } from 'mongoose';
 
-export interface IActor {
+export interface IDirector {
   _id: Types.ObjectId;
+  id: string;
   name: string;
   surname: string;
   bio: string;
@@ -10,7 +11,7 @@ export interface IActor {
   tvShowEpisodes: Types.ObjectId[];
 }
 
-const actorSchema = new Schema<IActor>({
+const directorSchema = new Schema<IDirector>({
   name: { type: String, required: true },
   surname: { type: String, required: true },
   bio: { type: String },
@@ -18,6 +19,19 @@ const actorSchema = new Schema<IActor>({
   movies: [{ type: Schema.Types.ObjectId, ref: 'Movie' }],
   tvShowEpisodes: [{ type: Schema.Types.ObjectId, ref: 'TVShow' }],
 })
-export const Actor = model<IActor>('Actor', actorSchema)
+
+
+// Define a virtual property "id" based on the "_id" field
+directorSchema.virtual('id').get(function () {
+  return this._id.toHexString();
+});
+
+
+// Ensure virtual fields are serialized when converting to JSON
+directorSchema.set('toJSON', {
+  virtuals: true,
+});
+
+export const Director = model<IDirector>('Director', directorSchema)
 
 
