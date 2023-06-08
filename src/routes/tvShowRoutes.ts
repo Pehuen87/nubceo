@@ -1,11 +1,16 @@
 import express from 'express';
-import { getTvShow } from '../controllers/tvShowController';
+import { getTvShow, getAllTvShows, createTvShow } from '../controllers/tvShowController';
 
-const router = express.Router();
+const tvShowRouter = express.Router();
 
 // GET /tvshows/:id
-router.get('/:id', getTvShow);
+tvShowRouter.get('/', getAllTvShows);
 
 
+// GET /tvshows/:id
+tvShowRouter.get('/:id', getTvShow);
 
-export default router;
+// POST /tvshows
+tvShowRouter.post('/', createTvShow);
+
+export default tvShowRouter;

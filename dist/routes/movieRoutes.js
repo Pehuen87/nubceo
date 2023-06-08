@@ -1,30 +1,16 @@
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.movies = void 0;
-const mock_1 = require("../helpers/mock");
-const movies = (req, res) => {
-    // Get query parameters for filtering and sorting
-    const genre = req.query.genre;
-    const title = req.query.title;
-    const plot = req.query.plot;
-    const sortBy = req.query.sortBy;
-    let filteredMovies = [...(0, mock_1.generateDB)().movies];
-    // Filter movies by genre if provided
-    if (genre) {
-        filteredMovies = filteredMovies.filter((movie) => movie.genre.toLowerCase() === genre.toLowerCase());
-    }
-    // Filter movies by title if provided
-    if (title) {
-        filteredMovies = filteredMovies.filter((movie) => movie.title.toLowerCase() === title.toLowerCase());
-    }
-    // Filter movies by plot if provided
-    if (plot) {
-        filteredMovies = filteredMovies.filter((movie) => movie.plot.toLowerCase() === plot.toLowerCase());
-    }
-    // Sort movies by the specified field if provided
-    if (sortBy)
-        filteredMovies.sort((a, b) => a[sortBy].localeCompare(b[sortBy]));
-    res.json(filteredMovies);
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
 };
-exports.movies = movies;
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = __importDefault(require("express"));
+const movieController_1 = require("../controllers/movieController");
+const movieRouter = express_1.default.Router();
+// GET /movies/
+movieRouter.get('/', movieController_1.getAllMovies);
+// GET /movies/:id
+movieRouter.get('/:id', movieController_1.getMovie);
+// POST /movies
+movieRouter.post('/', movieController_1.createMovie);
+exports.default = movieRouter;
 //# sourceMappingURL=movieRoutes.js.map

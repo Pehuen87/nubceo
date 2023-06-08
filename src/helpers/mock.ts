@@ -1,9 +1,8 @@
 import faker from 'faker';
 import { Director, IDirector } from '../models/directorModel';
-import { Actor, IActor } from '../models/actorModel';
+import { Actor } from '../models/actorModel';
 import { Movie, IMovie } from '../models/movieModel'
 import { TVShow, ITVShow } from '../models/tvShowModel';
-
 
 
 
@@ -12,7 +11,7 @@ import { TVShow, ITVShow } from '../models/tvShowModel';
 const generateEpisode = () => ({
   episodeId: faker.datatype.uuid(),
   title: faker.lorem.words(3),
-  director: generateDirector(),
+  director: null,
   season: faker.datatype.number({ min: 1, max: 10 }),
 });
 
@@ -26,14 +25,18 @@ const generateEpisodes = (count: number) => {
 };
 
 // Generate a mock TV show
-const generateTVShow = (): ITVShow => new TVShow({
-  title: faker.lorem.words(3),
-  genre: faker.random.word(),
-  seasons: faker.datatype.number({ min: 1, max: 10 }),
-  plot: faker.lorem.paragraph(),
-  episodes: generateEpisodes(faker.datatype.number({ min: 1, max: 20 })),
-  actors: [generateActors(4)],
-});
+const generateTVShow = (): ITVShow => {
+  const show = new TVShow({
+    title: faker.lorem.words(3),
+    genre: faker.random.word(),
+    seasons: faker.datatype.number({ min: 1, max: 10 }),
+    plot: faker.lorem.paragraph(),
+    episodes: generateEpisodes(faker.datatype.number({ min: 1, max: 20 })),
+    actors: [],
+  });
+  show.save();
+  return show;
+}
 
 // Generate an array of mock TV shows
 const generateTVShows = (count: number) => {
@@ -45,13 +48,17 @@ const generateTVShows = (count: number) => {
 };
 
 // Generate a mock Movie
-const generateMovie = (): IMovie => new Movie({
-  title: faker.lorem.words(3),
-  genre: faker.random.word(),
-  director: generateDirector(),
-  plot: faker.lorem.paragraph(),
-  actors: [generateActors(4)],
-});
+const generateMovie = (): IMovie =>{
+  const aMovie = new Movie({
+    title: faker.lorem.words(3),
+    genre: faker.random.word(),
+    director: null,
+    plot: faker.lorem.paragraph(),
+    actors: [],
+  });
+  aMovie.save();
+  return aMovie;
+}
 
 // Generate an array of mock movies
 const generateMovies = (count: number) => {
@@ -63,18 +70,23 @@ const generateMovies = (count: number) => {
 };
 
 // Generate a mock Director
-const generateDirector = (): IDirector => new Director({
-  name: faker.name.firstName(),
-  surname: faker.name.lastName(),
-  bio: faker.lorem.paragraph(),
-  avatar: faker.image.avatar(),
-  movies: [],
-  tvShowEpisodes: [],
-});
+const generateDirector = (): IDirector => {
+  const aDirector = new Director({
+    name: faker.name.firstName(),
+    surname: faker.name.lastName(),
+    bio: faker.lorem.paragraph(),
+    avatar: faker.image.avatar(),
+    movies: [],
+    tvShowEpisodes: [],
+  });
+
+  aDirector.save();
+  return aDirector;
+}
 
 // Generate an array of mock directors
 const generateDirectors = (count: number) => {
-  const directors = [];
+  const directors : IDirector[] = [];
   for (let i = 0; i < count; i++) {
     directors.push(generateDirector());
   }
@@ -82,14 +94,18 @@ const generateDirectors = (count: number) => {
 };
 
 // Generate a mock Actor
-const generateActor = (): IActor => new Actor({
-  name: faker.name.firstName(),
-  surname: faker.name.lastName(),
-  bio: faker.lorem.paragraph(),
-  avatar: faker.image.avatar(),
-  movies: [],
-  tvShowEpisodes: [],
-});
+const generateActor = () => {
+  const anActor = new Actor({
+    name: faker.name.firstName(),
+    surname: faker.name.lastName(),
+    bio: faker.lorem.paragraph(),
+    avatar: faker.image.avatar(),
+    movies: [],
+    tvShowEpisodes: [],
+  });
+  anActor.save();
+  return anActor._id;
+}
 
 // Generate an array of mock actors
 const generateActors = (count: number) => {
@@ -100,11 +116,10 @@ const generateActors = (count: number) => {
   return actors;
 };
 
-export interface Idb { movies: IMovie[], tvshows: ITVShow[], actors: IActor[], directors: IDirector[] }
 
-const getRandomsActors = (arr : IActor[]) => {
+const getRandoms = (arr , q) => {
   
-  let   len = arr.length,
+  let   len = Math.min(q, arr.length), 
         n = faker.datatype.number({ min: 1, max: len});
   const result = new Array(n),
         taken = new Array(len);
@@ -116,57 +131,90 @@ const getRandomsActors = (arr : IActor[]) => {
   return result;
 }
 
+async function updateActors(arr, _id){
+  const actorUpdates = arr.map((actor) => {
+    actor.movies.push(_id);
+    return actor.save();
+  });
 
-const pickActorsAndDirector = (db : Idb) => {
 
-  db.movies.forEach(movie => {
-    const selectedActors : IActor[]= getRandomsActors(db.actors);
-    const selectedDirector : IDirector = db.directors[faker.datatype.number({ min: 0, max: db.directors.length-1})];
-    selectedActors.forEach(actor => {
+  await Promise.all([...actorUpdates]);
+}
+async function pickActorsAndDirector() {
+  const [movies, actors, directors, tvshows] = await Promise.all([
+    Movie.find(),
+    Actor.find(),
+    Director.find(),
+    TVShow.find()
+  ]);
+
+  const movieUpdates = movies.map(async (movie) => {
+    const selectedActors = getRandoms(actors, 10);
+    const selectedDirector = getRandoms(directors, 1)[0];
+
+    const actorUpdates = selectedActors.map(async (actor) => {
       actor.movies.push(movie._id);
+      await actor.save();
     });
+
     selectedDirector.movies.push(movie._id);
 
-    movie.actors = selectedActors.map( a => a._id);
+    await Promise.allSettled([...actorUpdates, selectedDirector.save()]);
+
+    movie.actors = selectedActors.map((a) => a._id);
     movie.director = selectedDirector._id;
+    return movie.save();
   });
 
-  db.tvshows.forEach(tvshow => {
-    const selectedActors : IActor[]= getRandomsActors(db.actors);
-    
-    selectedActors.forEach(actor => {
+  await Promise.allSettled(movieUpdates);
+
+  const tvshowUpdates = tvshows.map(async (tvshow) => {
+    const selectedActors = getRandoms(actors, 10);
+    const episodeUpdates = [];
+
+    selectedActors.forEach((actor) => {
       actor.tvShowEpisodes.push(tvshow._id);
+      episodeUpdates.push(actor.save());
     });
 
-    tvshow.actors = selectedActors.map( a => a._id);
-    
-    tvshow.episodes.forEach(episode => {
-      const selectedDirector : IDirector = db.directors[faker.datatype.number({ min: 0, max: db.directors.length-1})];
+    tvshow.actors = selectedActors.map((a) => a._id);
+
+    tvshow.episodes.forEach((episode) => {
+      const selectedDirector = getRandoms(directors, 1)[0];
       episode.director = selectedDirector._id;
       selectedDirector.tvShowEpisodes.push(tvshow._id);
+      episodeUpdates.push(selectedDirector.save());
     });
+
+    episodeUpdates.push(tvshow.save());
+
+    await Promise.allSettled(episodeUpdates);
   });
 
-
+  await Promise.allSettled(tvshowUpdates);
 }
 
 
-export const generateDB = (): Idb => {
+export interface Idb { movies, tvshows, actors, directors }
 
-  const mockDB: Idb = {
-    movies: generateMovies(faker.datatype.number({ min: 3, max: 20 })),
-    tvshows: generateTVShows(faker.datatype.number({ min: 3, max: 20 })),
-    actors: generateActors(faker.datatype.number({ min: 3, max: 20 })),
-    directors: generateDirectors(faker.datatype.number({ min: 3, max: 20 }))
-  };
+export async function generateDB (){
 
-  pickActorsAndDirector(mockDB);
+  generateMovies(faker.datatype.number({ min: 3, max: 20 }));
+  generateTVShows(faker.datatype.number({ min: 10, max: 40 }));
+  generateActors(faker.datatype.number({ min: 3, max: 50 }));
+  generateDirectors(faker.datatype.number({ min: 3, max: 20 }));
+  
 
+  pickActorsAndDirector();
 
-  return mockDB;
-
-
+  
 }
+    
+
+
+
+
+
 
 
 

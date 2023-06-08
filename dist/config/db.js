@@ -8,18 +8,24 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.connectToDatabase = void 0;
+const mongoose_1 = __importDefault(require("mongoose"));
+const mock_1 = require("../helpers/mock");
 function connectToDatabase() {
     return __awaiter(this, void 0, void 0, function* () {
-        /*
-          try {
-            await mongoose.connect(process.env.MONGO_URI);
+        try {
+            yield mongoose_1.default.connect(process.env.MONGO_URI);
             console.log('Connected to MongoDB');
-          } catch (error) {
+        }
+        catch (error) {
             console.error('Error connecting to MongoDB:', error);
-          }
-          */
+        }
+        //MOCK DATABASE
+        (0, mock_1.generateDB)();
     });
 }
 exports.connectToDatabase = connectToDatabase;

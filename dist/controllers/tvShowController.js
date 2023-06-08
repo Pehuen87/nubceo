@@ -1,16 +1,53 @@
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.getTvShow = void 0;
-const mock_1 = require("../helpers/mock");
-const getTvShow = (req, res) => {
-    const { id } = req.params;
-    //TODO
-    const db = (0, mock_1.generateDB)();
-    const tvShow = db.tvshows.find((show) => show.id === id);
-    if (!tvShow) {
-        return res.status(404).json({ error: 'TV show not found' });
-    }
-    res.json(tvShow);
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.createTvShow = exports.getAllTvShows = exports.getTvShow = void 0;
+const tvShowRepository_1 = __importDefault(require("../repositories/tvShowRepository"));
+// GET /tvshows
+function getAllTvShows(req, res) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const tvShows = yield tvShowRepository_1.default.getAllTVShows();
+            res.json(tvShows);
+        }
+        catch (error) {
+            res.status(500).json({ message: error.message });
+        }
+    });
+}
+exports.getAllTvShows = getAllTvShows;
+// GET /tvshows/:id
+function getTvShow(req, res) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const tvShowId = req.params.id;
+        try {
+            const tvShows = yield tvShowRepository_1.default.getTVShowById(tvShowId);
+            res.json(tvShows);
+        }
+        catch (error) {
+            res.status(500).json({ message: error.message });
+        }
+    });
+}
 exports.getTvShow = getTvShow;
+// POST /tvshows
+function createTvShow(req, res) {
+    return __awaiter(this, void 0, void 0, function* () {
+        // Create a new TV show using the request body
+        // Example: const newTvShow = await TvShow.create(req.body);
+        res.send('New TV Show created');
+    });
+}
+exports.createTvShow = createTvShow;
 //# sourceMappingURL=tvShowController.js.map

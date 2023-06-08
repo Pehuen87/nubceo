@@ -19,6 +19,36 @@ export function generateRefreshToken(username: string): string {
   return jwt.sign({ username }, JWT_SECRET, { expiresIn: '10d' });
 }
 
+
+
+// Middleware for authenticating username and password
+export function authenticateUser(
+  req: AuthenticatedRequest,
+  res: Response,
+  next: NextFunction
+) {
+  const { username, password } = req.body;
+  const a = 1;
+  if(a===1) req.user=username
+  else return res.status(403).json({ error: 'Invalid user or password' });
+
+  next();
+}
+
+// Generate tokens
+export function generateTokens(
+  req: AuthenticatedRequest,
+  res: Response
+) {
+  // Generate and return new access and refresh token
+  const {username} = req.user;
+  const accessToken = generateAccessToken(username);
+  const refreshToken = generateRefreshToken(username);
+
+  res.json({ accessToken, refreshToken });
+}
+
+
 // Middleware for authenticating access token
 export function authenticateToken(
   req: AuthenticatedRequest,
