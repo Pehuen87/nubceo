@@ -1,8 +1,12 @@
 import mongoose from 'mongoose';
+//IMPORTED FOR MOCK DATABASE
 import { generateDB } from '../helpers/mock';
 
+
+
+
 async function connectToDatabase() {
-    
+
 
   try {
     await mongoose.connect(process.env.MONGO_URI);
@@ -10,9 +14,9 @@ async function connectToDatabase() {
   } catch (error) {
     console.error('Error connecting to MongoDB:', error);
   }
-  
 
-  //MOCK DATABASE
+
+  //GENERATE MOCK DATABASE
   generateDB();
 }
 

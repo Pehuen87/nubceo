@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
+import bcrypt from 'bcrypt'
 
 // Define JWT secret key (should be stored securely)
 const JWT_SECRET = process.env.JWT_SECRET;
@@ -21,6 +22,7 @@ export function generateRefreshToken(username: string): string {
 
 
 
+
 // Middleware for authenticating username and password
 export function authenticateUser(
   req: AuthenticatedRequest,
@@ -28,11 +30,29 @@ export function authenticateUser(
   next: NextFunction
 ) {
   const { username, password } = req.body;
-  const a = 1;
-  if(a===1) req.user=username
+  if (validatePassword(username, password)) req.user = username
   else return res.status(403).json({ error: 'Invalid user or password' });
 
   next();
+}
+
+//
+function validatePassword(
+  username: String,
+  password: String
+): Boolean {
+  // Find stored hashed password for provided username
+  //const storedHashedPassword = UserRepository.findByUsername(username).hashedPasword;
+  const hashedPassword = bcrypt.hash(password, 10);
+  bcrypt.compare(password, /*stored*/hashedPassword)
+    .then(res => {
+      return true;
+    })
+    .catch(err => {
+      //TODO Disable all tokens from provided username
+      return false;
+    })
+  return true;
 }
 
 // Generate tokens
@@ -41,7 +61,7 @@ export function generateTokens(
   res: Response
 ) {
   // Generate and return new access and refresh token
-  const {username} = req.user;
+  const { username } = req.user;
   const accessToken = generateAccessToken(username);
   const refreshToken = generateRefreshToken(username);
 
@@ -56,9 +76,8 @@ export function authenticateToken(
   next: NextFunction
 ) {
   const authHeader = req.headers['authorization'];
-  const token = (authHeader)? authHeader.split(' ')[1] : null;
+  const token = (authHeader) ? authHeader.split(' ')[1] : null;
 
-  console.log("token: ",token);
 
   if (!token) {
     return res.status(401).json({ error: 'Access token not provided' });
@@ -68,11 +87,17 @@ export function authenticateToken(
     if (err) {
       return res.status(403).json({ error: 'Invalid access token' });
     }
-
-    
     req.user = decoded.username;
-    next();
   });
+
+  //TODO Verify if the provided username doesn't have disabled tokens.
+  /*
+  userRepository.verifyTokenAvailable(req.user) => { 
+    if (err) {
+      return res.status(403).json({ error: 'Invalid access token' });
+    }
+  }*/
+  next();
 }
 
 // Middleware for authenticating refresh token
@@ -92,7 +117,17 @@ export function authenticateRefreshToken(
     if (err) {
       return res.status(403).json({ error: 'Invalid refresh token' });
     }
+
+
     req.user = decoded.username;
-    next();
   });
+
+  //TODO Verify if the provided username doesn't have disabled tokens.
+  /*
+  userRepository.verifyTokenAvailable(req.user) => { 
+    if (err) {
+      return res.status(403).json({ error: 'Invalid access token' });
+    }
+  }*/
+  next();
 }

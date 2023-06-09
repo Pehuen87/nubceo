@@ -1,19 +1,27 @@
 import { Request, Response } from 'express';
+import tvShowRepository from '../repositories/tvShowRepository'
 
 // GET /tvshows/:id/episodes
-function getAllEpisodes(req: Request, res: Response) {
+async function getAllEpisodes(req: Request, res: Response) {
   const tvShowId = req.params.id;
-  // Retrieve all episodes by TV Show ID
-  res.send(`TV Show ID: ${tvShowId}`);
+  try {
+    const episode = await tvShowRepository.getAllEpisodes(tvShowId);
+    res.json(episode);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
 }
 
-// GET /tvshows/:id/episodes/:episodeid
-function getEpisode(req: Request, res: Response) {
-    const tvShowId = req.params.id;
-    const episodeId = req.params.episodeid;
-    // Retrieve episode details using the TV show ID and episode ID
-    // Example: const episode = await Episode.findOne({ tvShowId, _id: episodeId });
-    res.send(`TV Show ID: ${tvShowId}, Episode ID: ${episodeId}`);
+// GET /tvshows/:id/episodes/:episodeId
+async function getEpisode(req: Request, res: Response) {
+  const tvShowId = req.params.id;
+  const episodeId = req.params.episodeId;
+  try {
+    const episode = await tvShowRepository.getEpisodebyId(tvShowId, episodeId);
+    res.json(episode);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
 }
 
 // POST /tvshows/:id/episodes

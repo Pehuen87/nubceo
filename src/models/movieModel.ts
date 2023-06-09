@@ -1,6 +1,7 @@
 import { Schema, model, Types } from 'mongoose';
 
-export interface IMovie {
+
+interface IMovie {
   _id: Types.ObjectId;
   id: string;
   title: string;
@@ -8,7 +9,7 @@ export interface IMovie {
   trailer: string;
   plot: string;
   director: Types.ObjectId;
-  actors: Types.ObjectId[];
+  actors: Array<Types.ObjectId>;
 }
 
 
@@ -33,6 +34,6 @@ movieSchema.set('toJSON', {
   virtuals: true,
 });
 
-export const Movie = model<IMovie>('Movie', movieSchema)
-
+const Movie = model<IMovie>('Movie', movieSchema)
+export default Movie;
 

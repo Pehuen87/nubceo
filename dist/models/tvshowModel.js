@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.TVShow = void 0;
 const mongoose_1 = require("mongoose");
+;
 const tvShowSchema = new mongoose_1.Schema({
     title: { type: String, required: true },
     genre: { type: String, required: true },
@@ -22,5 +22,6 @@ tvShowSchema.virtual('id').get(function () {
 tvShowSchema.set('toJSON', {
     virtuals: true,
 });
-exports.TVShow = (0, mongoose_1.model)('TVShow', tvShowSchema);
+const TVShow = (0, mongoose_1.model)('TVShow', tvShowSchema);
+exports.default = TVShow;
 //# sourceMappingURL=tvShowModel.js.map

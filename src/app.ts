@@ -20,7 +20,7 @@ app.use(express.json());
 
 // Define API endpoints
 app.use('/auth/', authRouter)
-app.use('/tvshows', authenticateToken,tvShowRouter);
+app.use('/tvshows', authenticateToken, tvShowRouter);
 app.use('/tvshows/:id/episodes', authenticateToken, episodeRouter);
 app.use('/movies', authenticateToken, movieRouter);
 

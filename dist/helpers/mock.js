@@ -14,10 +14,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.generateDB = void 0;
 const faker_1 = __importDefault(require("faker"));
-const directorModel_1 = require("../models/directorModel");
-const actorModel_1 = require("../models/actorModel");
-const movieModel_1 = require("../models/movieModel");
-const tvShowModel_1 = require("../models/tvShowModel");
+const directorModel_1 = __importDefault(require("../models/directorModel"));
+const actorModel_1 = __importDefault(require("../models/actorModel"));
+const movieModel_1 = __importDefault(require("../models/movieModel"));
+const tvShowModel_1 = __importDefault(require("../models/tvShowModel"));
 // Generate a mock episode
 const generateEpisode = () => ({
     episodeId: faker_1.default.datatype.uuid(),
@@ -35,7 +35,7 @@ const generateEpisodes = (count) => {
 };
 // Generate a mock TV show
 const generateTVShow = () => {
-    const show = new tvShowModel_1.TVShow({
+    const show = new tvShowModel_1.default({
         title: faker_1.default.lorem.words(3),
         genre: faker_1.default.random.word(),
         seasons: faker_1.default.datatype.number({ min: 1, max: 10 }),
@@ -56,7 +56,7 @@ const generateTVShows = (count) => {
 };
 // Generate a mock Movie
 const generateMovie = () => {
-    const aMovie = new movieModel_1.Movie({
+    const aMovie = new movieModel_1.default({
         title: faker_1.default.lorem.words(3),
         genre: faker_1.default.random.word(),
         director: null,
@@ -76,13 +76,11 @@ const generateMovies = (count) => {
 };
 // Generate a mock Director
 const generateDirector = () => {
-    const aDirector = new directorModel_1.Director({
+    const aDirector = new directorModel_1.default({
         name: faker_1.default.name.firstName(),
         surname: faker_1.default.name.lastName(),
         bio: faker_1.default.lorem.paragraph(),
         avatar: faker_1.default.image.avatar(),
-        movies: [],
-        tvShowEpisodes: [],
     });
     aDirector.save();
     return aDirector;
@@ -97,13 +95,11 @@ const generateDirectors = (count) => {
 };
 // Generate a mock Actor
 const generateActor = () => {
-    const anActor = new actorModel_1.Actor({
+    const anActor = new actorModel_1.default({
         name: faker_1.default.name.firstName(),
         surname: faker_1.default.name.lastName(),
         bio: faker_1.default.lorem.paragraph(),
         avatar: faker_1.default.image.avatar(),
-        movies: [],
-        tvShowEpisodes: [],
     });
     anActor.save();
     return anActor._id;
@@ -137,53 +133,45 @@ function updateActors(arr, _id) {
 }
 function pickActorsAndDirector() {
     return __awaiter(this, void 0, void 0, function* () {
-        const [movies, actors, directors, tvshows] = yield Promise.all([
-            movieModel_1.Movie.find(),
-            actorModel_1.Actor.find(),
-            directorModel_1.Director.find(),
-            tvShowModel_1.TVShow.find()
-        ]);
-        const movieUpdates = movies.map((movie) => __awaiter(this, void 0, void 0, function* () {
+        const movies = yield movieModel_1.default.find(), actors = yield actorModel_1.default.find(), directors = yield directorModel_1.default.find(), tvshows = yield tvShowModel_1.default.find();
+        movies.forEach((movie) => __awaiter(this, void 0, void 0, function* () {
             const selectedActors = getRandoms(actors, 10);
             const selectedDirector = getRandoms(directors, 1)[0];
-            const actorUpdates = selectedActors.map((actor) => __awaiter(this, void 0, void 0, function* () {
-                actor.movies.push(movie._id);
-                yield actor.save();
-            }));
-            selectedDirector.movies.push(movie._id);
-            yield Promise.allSettled([...actorUpdates, selectedDirector.save()]);
             movie.actors = selectedActors.map((a) => a._id);
             movie.director = selectedDirector._id;
-            return movie.save();
+            movie.save();
         }));
-        yield Promise.allSettled(movieUpdates);
-        const tvshowUpdates = tvshows.map((tvshow) => __awaiter(this, void 0, void 0, function* () {
+        tvshows.forEach((tvshow) => __awaiter(this, void 0, void 0, function* () {
             const selectedActors = getRandoms(actors, 10);
-            const episodeUpdates = [];
-            selectedActors.forEach((actor) => {
-                actor.tvShowEpisodes.push(tvshow._id);
-                episodeUpdates.push(actor.save());
-            });
             tvshow.actors = selectedActors.map((a) => a._id);
             tvshow.episodes.forEach((episode) => {
                 const selectedDirector = getRandoms(directors, 1)[0];
                 episode.director = selectedDirector._id;
-                selectedDirector.tvShowEpisodes.push(tvshow._id);
-                episodeUpdates.push(selectedDirector.save());
             });
-            episodeUpdates.push(tvshow.save());
-            yield Promise.allSettled(episodeUpdates);
+            tvshow.save();
         }));
-        yield Promise.allSettled(tvshowUpdates);
+        return;
     });
 }
 function generateDB() {
     return __awaiter(this, void 0, void 0, function* () {
-        generateMovies(faker_1.default.datatype.number({ min: 3, max: 20 }));
-        generateTVShows(faker_1.default.datatype.number({ min: 10, max: 40 }));
-        generateActors(faker_1.default.datatype.number({ min: 3, max: 50 }));
-        generateDirectors(faker_1.default.datatype.number({ min: 3, max: 20 }));
-        pickActorsAndDirector();
+        /*
+          //GENERATE MOCK MOVIES
+          generateMovies(faker.datatype.number({ min: 3, max: 20 }));
+        
+          //GENERATE MOCK TVSHOWS
+          generateTVShows(faker.datatype.number({ min: 10, max: 40 }));
+        
+          //GENERATE MOCK ACTORS
+          generateActors(faker.datatype.number({ min: 3, max: 50 }));
+        
+          //GENERATE MOCK DIRECTORS
+          generateDirectors(faker.datatype.number({ min: 3, max: 20 }));
+        
+          //PICK ACTORS AND DIRECTORS FOR EACH TVSERIES AND MOVIE
+          await pickActorsAndDirector();
+        */
+        console.log("MOCK DATABASE GENERATED");
     });
 }
 exports.generateDB = generateDB;

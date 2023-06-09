@@ -1,6 +1,7 @@
-import { Schema, model, Types } from 'mongoose';
+import { Schema, model, Types } from 'mongoose';;
 
-export interface ITVShow {
+
+interface ITVShow {
   _id: Types.ObjectId;
   id: string;
   title: string;
@@ -13,7 +14,7 @@ export interface ITVShow {
     director: Types.ObjectId;
     season: number;
   }[];
-  actors: Types.ObjectId[];
+  actors: Array<Types.ObjectId>;
 }
 
 
@@ -36,9 +37,12 @@ tvShowSchema.virtual('id').get(function () {
 });
 
 
+
+
 // Ensure virtual fields are serialized when converting to JSON
 tvShowSchema.set('toJSON', {
   virtuals: true,
 });
 
-export const TVShow = model<ITVShow>('TVShow', tvShowSchema)
+const TVShow = model<ITVShow>('TVShow', tvShowSchema);
+export default TVShow;

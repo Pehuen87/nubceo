@@ -29,7 +29,7 @@ class TVShowRepository {
     getTVShowById(id) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const tvShow = yield tvShowModel_1.default.findById(id).populate('actors').populate('episodes.director');
+                const tvShow = yield tvShowModel_1.default.findById(id);
                 return tvShow;
             }
             catch (error) {
@@ -49,17 +49,6 @@ class TVShowRepository {
             }
         });
     }
-    getAllEpisodes(tvShowId) {
-        return __awaiter(this, void 0, void 0, function* () {
-            try {
-                const tvShow = yield this.getTVShowById(tvShowId);
-                return tvShow.episodes;
-            }
-            catch (error) {
-                throw new Error('Error retrieving Episodes');
-            }
-        });
-    }
     createTVShow(tvShowData) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
@@ -73,4 +62,4 @@ class TVShowRepository {
     }
 }
 exports.default = new TVShowRepository();
-//# sourceMappingURL=tvShowRepository.js.map
+//# sourceMappingURL=tvShowRepository%20copy.js.map

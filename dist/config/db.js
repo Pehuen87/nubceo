@@ -14,6 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.connectToDatabase = void 0;
 const mongoose_1 = __importDefault(require("mongoose"));
+//IMPORTED FOR MOCK DATABASE
 const mock_1 = require("../helpers/mock");
 function connectToDatabase() {
     return __awaiter(this, void 0, void 0, function* () {
@@ -24,7 +25,7 @@ function connectToDatabase() {
         catch (error) {
             console.error('Error connecting to MongoDB:', error);
         }
-        //MOCK DATABASE
+        //GENERATE MOCK DATABASE
         (0, mock_1.generateDB)();
     });
 }
