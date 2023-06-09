@@ -2,7 +2,7 @@
 
 ## My Node.js Express App
 
-This is a Node.js Express in TypeScript application for managing TV shows and movies.
+This is a Node.js Express in TypeScript application for managing TV shows and movies stored on a MongoDB database. 
 
 ### Getting Started
 
@@ -40,9 +40,10 @@ Add the necessary environment variables in the .env file. For example:
 
 
 ```
-PORT=3000
+PORT=3000 //the port where the server will listen
 DB_CONNECTION_STRING=mongodb://localhost:<PORT>/<DATABASE>
-JWT_SECRET=<SECRET_KEY>
+JWT_SECRET=<SECRET_KEY> //the secret key for the JSON Web Token
+SALT_ROUNDS  //the rounds for hashing the password 
 ```
 
 4. Start the server:
@@ -73,16 +74,7 @@ npm start
 - Description: Nubceo Challenge
 - Author: Pehuen Assalone
 
-## Development
-###  Dependencies:
-- eslint: ^8.42.0
-- faker: ^5.5.3
-- nodemon: ^2.0.22
-- tsc-watch: ^6.0.4
-- typescript: ^5.1.3
-
 ## Schema
-
 ### Movie
 |Name|Type|
 |----|-----|
@@ -119,3 +111,11 @@ actors|Array<_ref to Actor>|
 |bio|string|
 |avatar|string|
 
+
+## Development
+###  Dependencies:
+- eslint: ^8.42.0
+- faker: ^5.5.3
+- nodemon: ^2.0.22
+- tsc-watch: ^6.0.4
+- typescript: ^5.1.3
