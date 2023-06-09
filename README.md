@@ -54,16 +54,16 @@ npm start
 5. Access the application at http://localhost:3000. or the PORT provided in .env file
 
 ## API Endpoints
-### AUTH
+#### AUTH
 - POST /auth/login  Login with username and password to obtain an access token.
 - POST /auth/token  Login with refresh token and obtain an access token.
-### TVSHOWS
+#### TVSHOWS
 - POST /tvshows  Create a new TV show.
 - GET /tvshows  Get all TV shows.
 - GET /tvshows/:id  Get a specific TV show by ID.
 - GET /tvshows/:id/episodes  Get all episodes for a specific TV show.
 - GET /tvshows/:id/episodes/:episodeId  Get a specific episode for a specific TV show.
-### MOVIES
+#### MOVIES
 - GET /movies  Get all movies.
 - GET /movies/:id  Get a specific movie by ID.
 
@@ -92,3 +92,30 @@ npm start
 |plot|string|
 |director|_ref to Director_|
 |actors|_ref to Actor_|
+
+### TVSHOWS
+|Name|Type|
+|----|-----|
+title|string|
+genre|string|
+seasons|number|
+plot|string|
+episodes|Array of episodes |
+actors|Array<_ref to Actor>|
+
+### EPISODES
+|Name|Type|
+|----|-----|
+|episodeId|string|
+|title|string|
+|director|_ref to Director_|
+|season|number|
+
+### Director & Actor
+|Name|Type|
+|----|-----|
+|name|string|
+|surname|string|
+|bio|string|
+|avatar|string|
+
