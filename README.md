@@ -54,13 +54,16 @@ npm start
 5. Access the application at http://localhost:3000. or the PORT provided in .env file
 
 ## API Endpoints
+### AUTH
 - POST /auth/login  Login with username and password to obtain an access token.
+- POST /auth/token  Login with refresh token and obtain an access token.
+### TVSHOWS
 - POST /tvshows  Create a new TV show.
 - GET /tvshows  Get all TV shows.
 - GET /tvshows/:id  Get a specific TV show by ID.
-- POST /tvshows/:id/episodes  Create a new episode for a specific TV show.
 - GET /tvshows/:id/episodes  Get all episodes for a specific TV show.
 - GET /tvshows/:id/episodes/:episodeId  Get a specific episode for a specific TV show.
+### MOVIES
 - GET /movies  Get all movies.
 - GET /movies/:id  Get a specific movie by ID.
 
@@ -69,7 +72,6 @@ npm start
 - Version: 1.0.0
 - Description: Nubceo Challenge
 - Author: Pehuen Assalone
-- License: ISC
 
 ## Development
 ###  Dependencies:
@@ -79,6 +81,14 @@ npm start
 - tsc-watch: ^6.0.4
 - typescript: ^5.1.3
 
-### License
-This project is licensed under the MIT License.
+## Schema
 
+### Movie
+|Name|Type|
+|----|-----|
+|title|string|
+|genre|string|
+|trailer|string|
+|plot|string|
+|director|_ref to Director_|
+|actors|_ref to Actor_|

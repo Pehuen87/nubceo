@@ -38,9 +38,9 @@ export function authenticateUser(
 
 //
 function validatePassword(
-  username: String,
-  password: String
-): Boolean {
+  username: string,
+  password: string
+): boolean {
   // Find stored hashed password for provided username
   //const storedHashedPassword = UserRepository.findByUsername(username).hashedPasword;
   const hashedPassword = bcrypt.hash(password, 10);
