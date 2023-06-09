@@ -40,10 +40,10 @@ Add the necessary environment variables in the .env file. For example:
 
 
 ```
-PORT=3000 //the port where the server will listen
-DB_CONNECTION_STRING=mongodb://localhost:<PORT>/<DATABASE>
-JWT_SECRET=<SECRET_KEY> //the secret key for the JSON Web Token
-SALT_ROUNDS  //the rounds for hashing the password 
+PORT=3000                     //the port where the server will listen
+DB_CONNECTION_STRING=mongodb://localhost:<PORT>/<DATABASE>      
+JWT_SECRET=<SECRET_KEY>        //the secret key for the JSON Web Token
+SALT_ROUNDS                   //the rounds for hashing the password 
 ```
 
 4. Start the server:
