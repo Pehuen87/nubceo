@@ -46,6 +46,7 @@ exports.getEpisode = getEpisode;
 // POST /tvshows/:id/episodes
 function createEpisode(req, res) {
     const tvShowId = req.params.id;
+    //const newEpisode = await tvShowRepository.createEpisode({tvShowId, ...req.body})
     // Create a new episode using the TV show ID and request body
     // Example: const newEpisode = await Episode.create({ tvShowId, ...req.body });
     res.send(`New episode created for TV Show ID: ${tvShowId}`);

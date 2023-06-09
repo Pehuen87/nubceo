@@ -45,9 +45,14 @@ class TVShowRepository {
     }
   }
 
-  async createTVShow(tvShowData) {
+  async createTVShow({ title, genre, seasons, plot, episodes, actors }) {
     try {
-      const tvShow = await TVShow.create(tvShowData);
+    // Create a new TV show object
+    const newTvShow = new TVShow({
+      title, genre, seasons, plot, episodes, actors
+    })
+
+      const tvShow = await TVShow.create(newTvShow);
       return tvShow;
     } catch (error) {
       throw new Error('Error creating TV show');

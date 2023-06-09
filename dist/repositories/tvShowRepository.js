@@ -60,10 +60,14 @@ class TVShowRepository {
             }
         });
     }
-    createTVShow(tvShowData) {
+    createTVShow({ title, genre, seasons, plot, episodes, actors }) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const tvShow = yield tvShowModel_1.default.create(tvShowData);
+                // Create a new TV show object
+                const newTvShow = new tvShowModel_1.default({
+                    title, genre, seasons, plot, episodes, actors
+                });
+                const tvShow = yield tvShowModel_1.default.create(newTvShow);
                 return tvShow;
             }
             catch (error) {

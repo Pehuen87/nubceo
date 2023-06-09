@@ -43,6 +43,7 @@ class MovieRepository {
                 const query = movieModel_1.default.find().populate('actors').populate('director');
                 // Apply filters
                 if (title) {
+                    // Regex for lowcase comparisson
                     query.where('title').regex(new RegExp(title, 'i'));
                 }
                 if (genre) {
@@ -51,7 +52,7 @@ class MovieRepository {
                 if (plot) {
                     query.where('plot').equals(plot);
                 }
-                // Apply sorting
+                // Apply sorting: e.g. -title for descending, title for ascending
                 if (sortBy) {
                     const sortField = sortBy.substring(1); // Remove the '-' prefix from the sort field
                     const sortOrder = sortBy.startsWith('-') ? -1 : 1; // -1 for descending, 1 for ascending
@@ -70,7 +71,7 @@ class MovieRepository {
     createMovie(movieData) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const movie = yield movieModel_1.default.create(movieData);
+                const movie = yield movieModel_1.default.create();
                 return movie;
             }
             catch (error) {

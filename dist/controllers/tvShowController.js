@@ -44,9 +44,14 @@ exports.getTvShow = getTvShow;
 // POST /tvshows
 function createTvShow(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
-        // Create a new TV show using the request body
-        // Example: const newTvShow = await TvShow.create(req.body);
-        res.send('New TV Show created');
+        try {
+            // Save the TV show using the repository
+            const createdTvShow = yield tvShowRepository_1.default.createTVShow(req.body);
+            res.json(createdTvShow);
+        }
+        catch (error) {
+            res.status(500).json({ message: error.message });
+        }
     });
 }
 exports.createTvShow = createTvShow;

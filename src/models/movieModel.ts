@@ -1,7 +1,7 @@
 import { Schema, model, Types } from 'mongoose';
 
 
-interface IMovie {
+export interface IMovie {
   _id: Types.ObjectId;
   id: string;
   title: string;

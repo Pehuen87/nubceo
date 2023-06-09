@@ -26,9 +26,17 @@ async function getTvShow(req: Request, res: Response) {
 
 // POST /tvshows
 async function createTvShow(req: Request, res: Response) {
-  // Create a new TV show using the request body
-  // Example: const newTvShow = await TvShow.create(req.body);
-  res.send('New TV Show created');
+  try {
+
+  
+    // Save the TV show using the repository
+    const createdTvShow = await tvShowRepository.createTVShow(req.body);
+
+    res.json(createdTvShow);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
 }
+  
 
 export { getTvShow, getAllTvShows, createTvShow };

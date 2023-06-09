@@ -1,6 +1,6 @@
 import { Schema, model, Types } from 'mongoose';
 
-interface IActor {
+export interface IActor {
   id: string;
   _id: Types.ObjectId;
   name: string;

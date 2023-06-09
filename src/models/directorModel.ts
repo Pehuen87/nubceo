@@ -1,6 +1,6 @@
 import { Schema, model, Types } from 'mongoose';
 
-interface IDirector {
+export interface IDirector {
   _id: Types.ObjectId;
   id: string;
   name: string;

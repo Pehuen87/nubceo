@@ -4,8 +4,6 @@ import Movie from '../models/movieModel';
 
 class MovieRepository {
 
-
-
   async getAllMovies() {
     try {
       const movies = await Movie.find().populate('actors').populate('director');
@@ -32,6 +30,7 @@ class MovieRepository {
 
       // Apply filters
       if (title) {
+        // Regex for lowcase comparisson
         query.where('title').regex(new RegExp(title, 'i'));
       }
       if (genre) {
@@ -41,7 +40,7 @@ class MovieRepository {
         query.where('plot').equals(plot);
       }
 
-      // Apply sorting
+      // Apply sorting: e.g. -title for descending, title for ascending
       if (sortBy) {
         const sortField = sortBy.substring(1); // Remove the '-' prefix from the sort field
         const sortOrder = sortBy.startsWith('-') ? -1 : 1; // -1 for descending, 1 for ascending
@@ -59,7 +58,7 @@ class MovieRepository {
 
   async createMovie(movieData) {
     try {
-      const movie = await Movie.create(movieData);
+      const movie = await Movie.create();
       return movie;
     } catch (error) {
       throw new Error('Error creating Movie');

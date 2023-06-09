@@ -1,20 +1,22 @@
-import { Schema, model, Types } from 'mongoose';;
+import { Schema, model, Types } from 'mongoose';
 
 
-interface ITVShow {
+export interface ITVShow {
   _id: Types.ObjectId;
   id: string;
   title: string;
   genre: string;
   seasons: number;
   plot: string;
-  episodes: {
-    episodeId: string;
-    title: string;
-    director: Types.ObjectId;
-    season: number;
-  }[];
+  episodes: IEpisode[];
   actors: Array<Types.ObjectId>;
+}
+
+export interface IEpisode{
+  episodeId: string;
+  title: string;
+  director: Types.ObjectId;
+  season: number;
 }
 
 
