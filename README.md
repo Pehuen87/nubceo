@@ -73,17 +73,11 @@ npm start
 
 ## Development
 ###  Dependencies:
-@types/express: ^4.17.17
-@typescript-eslint/eslint-plugin: ^5.59.9
-eslint: ^8.42.0
-eslint-config-standard-with-typescript: ^35.0.0
-eslint-plugin-import: ^2.27.5
-eslint-plugin-n: ^15.7.0
-eslint-plugin-promise: ^6.1.1
-faker: ^5.5.3
-nodemon: ^2.0.22
-tsc-watch: ^6.0.4
-typescript: ^5.1.3
+- eslint: ^8.42.0
+- faker: ^5.5.3
+- nodemon: ^2.0.22
+- tsc-watch: ^6.0.4
+- typescript: ^5.1.3
 
 ### License
 This project is licensed under the MIT License.
